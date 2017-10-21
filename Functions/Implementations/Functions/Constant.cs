@@ -18,12 +18,19 @@ namespace Functions.Implementations.Functions
         public IInterval<TSpace> Interval { get; }
         public bool TryUnion(IFunction<TSpace, TValue> function)
         {
-            throw new NotImplementedException();
+            if (!(function is Constant<TSpace, TValue>) || !Interval.TryUnion(function.Interval))
+                return false;
+            IEquatable<TValue> compare = _value as IEquatable<TValue>;
+            if (compare == null)
+                return false;
+            return compare.Equals(((Constant<TSpace, TValue>) function)._value as IEquatable<TValue>);
         }
 
         public IFunction<TSpace, TValue> Union(IFunction<TSpace, TValue> function)
         {
-            throw new NotImplementedException();
+            if(TryUnion(function))
+                return new Constant<TSpace, TValue>(Interval.Union(function.Interval), _value);
+            throw new Exception("It is not possible to combine these intervals.");
         }
 
         public Constant(IInterval<TSpace> interval, TValue value)
