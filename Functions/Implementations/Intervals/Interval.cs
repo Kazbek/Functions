@@ -14,12 +14,17 @@ namespace Functions.Implementations.Intervals
 
         public bool TryUnion(IInterval<TSpace> interval)
         {
-            return Start.CompareTo(interval.End) > 0 || interval.Start.CompareTo(End) < 0 || (Start.Inclusive || interval.End.Inclusive) && Start.CompareTo(interval.End) == 0 || (End.Inclusive || interval.Start.Inclusive) && interval.Start.CompareTo(End) == 0;
+            return Start.CompareTo(interval.Start) > 0 && Start.CompareTo(interval.End) < 0
+                || End.CompareTo(interval.Start) > 0 && End.CompareTo(interval.End) < 0
+                || (Start.Inclusive || interval.End.Inclusive) && Start.CompareTo(interval.End) == 0
+                || (End.Inclusive || interval.Start.Inclusive) && interval.Start.CompareTo(End) == 0;
         }
 
         public IInterval<TSpace> Union(IInterval<TSpace> interval)
         {
-            throw new NotImplementedException();
+            if(TryUnion(interval))
+                return new Interval<TSpace>(Start.CompareTo(interval.Start) < 0 ? Start : interval.Start, End.CompareTo(interval.End) > 0 ? End : interval.End);
+            throw new Exception("There is a gap between the intervals.");
         }
 
         public Interval(TSpace start, bool inclusiveStart, TSpace end, bool inclusiveEnd)
