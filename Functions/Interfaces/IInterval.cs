@@ -10,6 +10,9 @@ namespace Functions.Interfaces
         IntervalEdge<TSpace> Start { get; }
         IntervalEdge<TSpace> End { get; }
         bool Contains(TSpace point);
+        bool IsAdjacent(IInterval<TSpace> interval);
+        bool IsAdjacentRight(IInterval<TSpace> interval);
+        bool IsAdjacentLeft(IInterval<TSpace> interval);
         bool TryUnion(IInterval<TSpace> interval);
         IInterval<TSpace> Union(IInterval<TSpace> interval);
     }

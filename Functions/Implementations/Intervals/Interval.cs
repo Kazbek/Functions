@@ -14,6 +14,13 @@ namespace Functions.Implementations.Intervals
                 || End.Inclusive && point.CompareTo(End.Position) == 0;
         }
 
+        public bool IsAdjacent(IInterval<TSpace> interval) => End.Position.CompareTo(interval.Start.Position) == 0 && End.Inclusive ^ interval.Start.Inclusive
+                                                          || Start.Position.CompareTo(interval.End.Position) == 0 && Start.Inclusive ^ interval.End.Inclusive;
+
+        public bool IsAdjacentRight(IInterval<TSpace> interval) => End.Position.CompareTo(interval.Start.Position) == 0 && End.Inclusive ^ interval.Start.Inclusive;
+
+        public bool IsAdjacentLeft(IInterval<TSpace> interval) => Start.Position.CompareTo(interval.End.Position) == 0 && Start.Inclusive ^ interval.End.Inclusive;
+
         public bool TryUnion(IInterval<TSpace> interval)
         {
             return Start.CompareTo(interval.Start) > 0 && Start.CompareTo(interval.End) < 0

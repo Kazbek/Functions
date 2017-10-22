@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Functions.Interfaces;
 
 namespace Functions.Implementations.Intervals
 {
-    public class IntervalEdge<TSpace> : IComparable<IntervalEdge<TSpace>> where TSpace : IComparable<TSpace>
+    public class IntervalEdge<TSpace> : IIntervalEdge<TSpace> where TSpace : IComparable<TSpace>
     {
         public TSpace Position { get; }
         public bool Inclusive { get; }
@@ -17,7 +18,7 @@ namespace Functions.Implementations.Intervals
             Inclusive = inclusive;
         }
 
-        public int CompareTo(IntervalEdge<TSpace> other)
+        public int CompareTo(IIntervalEdge<TSpace> other)
         {
             int compare = Position.CompareTo(other.Position);
             if (compare != 0)

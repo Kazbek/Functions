@@ -42,14 +42,23 @@ namespace Functions.Implementations.Functions
             _functions = new List<IFunction<TSpace, TValue>>(functions.Count);
             foreach (IFunction<TSpace, TValue> function in functions)
             {
+                if(Interval != null && !Interval.IsAdjacentRight(function.Interval))
+                    throw new Exception("Intervals do not go one by one.");
                 Interval = Interval?.Union(function.Interval) ?? function.Interval;
                 AddFunction(function);
             }
         }
         private void AddFunction(IFunction<TSpace, TValue> function)
         {
-            if(_functions.Count == 0 || _functions[_functions.Count-1].Interval.End.Position.CompareTo(function.Interval.Start.Position) == 0 && _functions[_functions.Count - 1].Interval.End.Inclusive != function.Interval.Start.Inclusive)
+            int count = _functions.Count;
+            if (count > 0 && _functions[count-1].TryUnion(function))
+            {
+                _functions[count - 1] = _functions[count - 1].Union(function); 
+            }
+            else
+            {
                 _functions.Add(function);
+            }
         }
         
     }
