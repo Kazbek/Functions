@@ -18,16 +18,6 @@ namespace Functions.Implementations.Intervals
             Inclusive = inclusive;
         }
 
-        public int CompareTo(IIntervalEdge<TSpace> other)
-        {
-            int compare = Position.CompareTo(other.Position);
-            if (compare != 0)
-                return compare;
-            if (Inclusive && !other.Inclusive)
-                return 1;
-            if (other.Inclusive && !Inclusive)
-                return -1;
-            return compare;
-        }
+        public int CompareTo(IIntervalEdge<TSpace> other) => Position.CompareTo(other.Position);
     }
 }

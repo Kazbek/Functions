@@ -16,7 +16,7 @@ namespace Functions.Tests.InrervalEdges.IntervalEdge
         [DataRow(1,false)]
         [DataRow(int.MaxValue,true)]
         [DataRow(int.MinValue,false)]
-        public void IntFromDatrow(int value, bool inclusive)
+        public void IntFromDataRow(int value, bool inclusive)
         {
             IntervalEdge<int> edge = new IntervalEdge<int>(value, inclusive);
             Assert.AreEqual(edge.Position, value);
