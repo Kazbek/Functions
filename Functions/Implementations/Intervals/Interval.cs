@@ -5,8 +5,8 @@ namespace Functions.Implementations.Intervals
 {
     public class Interval<TSpace> : IInterval<TSpace> where TSpace : IComparable<TSpace>
     {
-        public IntervalEdge<TSpace> Start { get; }
-        public IntervalEdge<TSpace> End { get; }
+        public IIntervalEdge<TSpace> Start { get; }
+        public IIntervalEdge<TSpace> End { get; }
         public bool Contains(TSpace point)
         {
             return point.CompareTo(Start.Position) > 0 && point.CompareTo(End.Position) < 0
@@ -44,7 +44,7 @@ namespace Functions.Implementations.Intervals
             Start = new IntervalEdge<TSpace>(start, inclusiveStart);
             End = new IntervalEdge<TSpace>(end, inclusiveEnd);
         }
-        public Interval(IntervalEdge<TSpace> start, IntervalEdge<TSpace> end)
+        public Interval(IIntervalEdge<TSpace> start, IIntervalEdge<TSpace> end)
         {
             if (start.CompareTo(end) > 0 
                 || start.CompareTo(end) == 0 && (!start.Inclusive || !end.Inclusive))

@@ -7,8 +7,8 @@ namespace Functions.Interfaces
 {
     public interface IInterval<TSpace> where TSpace : IComparable<TSpace>
     {
-        IntervalEdge<TSpace> Start { get; }
-        IntervalEdge<TSpace> End { get; }
+        IIntervalEdge<TSpace> Start { get; }
+        IIntervalEdge<TSpace> End { get; }
         bool Contains(TSpace point);
         bool IsAdjacent(IInterval<TSpace> interval);
         bool IsAdjacentRight(IInterval<TSpace> interval);
