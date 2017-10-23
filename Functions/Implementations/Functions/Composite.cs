@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Functions.Implementations.Intervals;
 using Functions.Interfaces;
 
 namespace Functions.Implementations.Functions
@@ -17,6 +18,7 @@ namespace Functions.Implementations.Functions
         {
             if(!Interval.Contains(point))
                 throw new ArgumentOutOfRangeException();
+            //_functions.BinarySearch(null, i => 0);
             return _functions.First(t => t.Interval.Contains(point)).Value(point);
         }
 
@@ -36,14 +38,24 @@ namespace Functions.Implementations.Functions
         /// <param name="functions">Функции, из которых будет состоять создаваемая. Должны быть упорядочены по интервалам, не иметь разрывов между собой, а также не перечекаться.</param>
         public Composite(List<IFunction<TSpace, TValue>> functions)
         {
+            int functionsCount = functions.Count;
+            if(functions == null || functionsCount == 0)
+                throw new Exception("Can not create from an empty list.");
             _functions = new List<IFunction<TSpace, TValue>>(functions.Count);
-            foreach (IFunction<TSpace, TValue> function in functions)
+            IFunction<TSpace, TValue> function = functions[0];
+            IInterval<TSpace> prevInterval = function.Interval;
+            IIntervalEdge<TSpace> start = prevInterval.Start;
+            AddFunction(functions[0]);
+            for (int i = 1; i < functionsCount; i++)
             {
-                if(Interval != null && !Interval.IsAdjacentRight(function.Interval))
+                function = functions[i];
+                if (!prevInterval.IsAdjacentRight(function.Interval))
                     throw new Exception("Intervals do not go one by one.");
-                Interval = Interval?.Union(function.Interval) ?? function.Interval;
+                prevInterval = function.Interval;
                 AddFunction(function);
             }
+            Interval = new Interval<TSpace>(start, function.Interval.End);
+            functions.Capacity = functions.Count;
         }
         private void AddFunction(IFunction<TSpace, TValue> function)
         {

@@ -31,6 +31,7 @@ namespace Functions.Tests.Intervals.Interval
         [DataRow(1, false, 2, true, 2, true, 3, false, false)]
         [DataRow(1, false, 23, true, 2, true, 3, false, false)]
         [DataRow(1, false, 23, true, 2, true, 32, false, false)]
+        [DataRow(1, true, 2, false, 2, true, 3, false, true)]
         public void IsAdjacentRightLeft(int ps1, bool is1, int pe1, bool ie1, int ps2, bool is2, int pe2, bool ie2, bool isAdjacent)
         {
             IInterval<int> first = new Interval<int>(ps1, is1, pe1, ie1);

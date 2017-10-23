@@ -3,7 +3,7 @@ using Functions.Interfaces;
 
 namespace Functions.Implementations.Intervals
 {
-    public class Interval<TSpace> : IInterval<TSpace> where TSpace : IComparable<TSpace>
+    public struct Interval<TSpace> : IInterval<TSpace> where TSpace : IComparable<TSpace>
     {
         public IIntervalEdge<TSpace> Start { get; }
         public IIntervalEdge<TSpace> End { get; }
@@ -23,17 +23,23 @@ namespace Functions.Implementations.Intervals
 
         public bool TryUnion(IInterval<TSpace> interval)
         {
-            return Start.CompareTo(interval.Start) > 0 && Start.CompareTo(interval.End) < 0
-                || End.CompareTo(interval.Start) > 0 && End.CompareTo(interval.End) < 0
+            return Contains(interval.Start.Position) || Contains(interval.End.Position) || interval.Contains(Start.Position) ||interval.Contains(End.Position)
                 || (Start.Inclusive || interval.End.Inclusive) && Start.CompareTo(interval.End) == 0
                 || (End.Inclusive || interval.Start.Inclusive) && interval.Start.CompareTo(End) == 0;
         }
 
         public IInterval<TSpace> Union(IInterval<TSpace> interval)
         {
-            if(TryUnion(interval))
-                return new Interval<TSpace>(Start.CompareTo(interval.Start) < 0 ? Start : interval.Start, End.CompareTo(interval.End) > 0 ? End : interval.End);
-            throw new Exception("There is a gap between the intervals.");
+            if (!TryUnion(interval))
+                throw new Exception("There is a gap between the intervals.");
+            bool inclusiveStart = Start.Position.CompareTo(interval.Start.Position) == 0 && (Start.Inclusive || interval.Start.Inclusive);
+            IntervalEdge<TSpace> start = new IntervalEdge<TSpace>(Start.Position.CompareTo(interval.Start.Position) < 0 ? Start.Position : interval.Start.Position,
+                Start.Position.CompareTo(interval.Start.Position) == 0 ? inclusiveStart : Start.Position.CompareTo(interval.Start.Position) < 0 ? Start.Inclusive : interval.Start.Inclusive);
+            bool inclusiveEnd = End.Position.CompareTo(interval.End.Position) == 0 && (End.Inclusive || interval.End.Inclusive);
+            IntervalEdge<TSpace> end = new IntervalEdge<TSpace>(End.Position.CompareTo(interval.End.Position) > 0 ? End.Position : interval.End.Position,
+                End.Position.CompareTo(interval.End.Position) == 0 ? inclusiveEnd : End.Position.CompareTo(interval.End.Position) > 0 ? End.Inclusive : interval.End.Inclusive);
+            return new Interval<TSpace>(start, end);
+            
         }
 
         public Interval(TSpace start, bool inclusiveStart, TSpace end, bool inclusiveEnd)
