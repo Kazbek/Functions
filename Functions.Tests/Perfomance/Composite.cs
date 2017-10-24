@@ -23,7 +23,7 @@ namespace Functions.Tests.Perfomance
             for (int i = 0; i < _count; i++)
             {
                 Interval<int> interval = new Interval<int>(i, true, i + 1, false);
-                constants.Add(new Constant<int, int>(interval, i/2));
+                constants.Add(new Constant<int, int>(interval, i));
             }
             _composite = new Composite<int, int>(constants);
         }
@@ -47,9 +47,10 @@ namespace Functions.Tests.Perfomance
             for (int i = 0; i < _count; i++)
             {
                 Interval<int> interval = new Interval<int>(i, true, i + 1, false);
-                constants.Add(new Constant<int, int>(interval, i / 2));
+                constants.Add(new Constant<int, int>(interval, i));
             }
             Composite<int,int> composite = new Composite<int, int>(constants);
+            int a = composite.Value(1);
         }
     }
 }
