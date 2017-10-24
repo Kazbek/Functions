@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
+﻿using System.Collections.Generic;
 using Functions.Implementations.Functions;
 using Functions.Implementations.Intervals;
 using Functions.Interfaces;
@@ -13,7 +9,7 @@ namespace Functions.Tests.Perfomance
     [TestClass]
     public class Composite
     {
-        private Composite<int, int> _composite;
+        private readonly Composite<int, int> _composite;
         private int _count;
         public Composite()
         {
@@ -39,7 +35,7 @@ namespace Functions.Tests.Perfomance
         }
 
         [TestMethod]
-        public void CreateComposite()
+        public void CreateCompositeWithoutUnnions()
         {
             _count = 10000;
             List<IFunction<int, int>> constants = new List<IFunction<int, int>>();
@@ -50,6 +46,21 @@ namespace Functions.Tests.Perfomance
                 constants.Add(new Constant<int, int>(interval, i));
             }
             Composite<int,int> composite = new Composite<int, int>(constants);
+            int a = composite.Value(1);
+        }
+
+        [TestMethod]
+        public void CreateCompositeWithHalfUions()
+        {
+            _count = 10000;
+            List<IFunction<int, int>> constants = new List<IFunction<int, int>>();
+
+            for (int i = 0; i < _count; i++)
+            {
+                Interval<int> interval = new Interval<int>(i, true, i + 1, false);
+                constants.Add(new Constant<int, int>(interval, i/2));
+            }
+            Composite<int, int> composite = new Composite<int, int>(constants);
             int a = composite.Value(1);
         }
     }

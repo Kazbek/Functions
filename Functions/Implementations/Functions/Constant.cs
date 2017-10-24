@@ -30,7 +30,7 @@ namespace Functions.Implementations.Functions
         {
             if(TryUnion(function))
                 return new Constant<TSpace, TValue>(Interval.Union(function.Interval), _value);
-            throw new Exception("It is not possible to combine these intervals.");
+            throw new Exception("It is not possible to combine these functions.");
         }
 
         public Constant(IInterval<TSpace> interval, TValue value)

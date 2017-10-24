@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Functions.Implementations.Intervals;
 using Functions.Interfaces;
 
@@ -24,12 +23,38 @@ namespace Functions.Implementations.Functions
         public IInterval<TSpace> Interval { get; }
         public bool TryUnion(IFunction<TSpace, TValue> function)
         {
-            throw new NotImplementedException();
+            return function is Composite<TSpace, TValue> && Interval.IsAdjacent(function.Interval);
         }
 
         public IFunction<TSpace, TValue> Union(IFunction<TSpace, TValue> function)
         {
-            throw new NotImplementedException();
+            if(!TryUnion(function))
+                throw new Exception("It is not possible to combine these functions.");
+            Composite<TSpace, TValue> composite = function as Composite<TSpace, TValue>;
+            Composite<TSpace, TValue> first, second;
+            if (Interval.Start.CompareTo(function.Interval.Start) > 0)
+            {
+                first = (Composite<TSpace, TValue>) function;
+                second = this;
+            }
+            else
+            {
+                first = this;
+                second = (Composite<TSpace, TValue>)function;
+            }
+            int firstCount = first._functions.Length;
+            int secondCount = second._functions.Length;
+            IFunction<TSpace, TValue>[] newFunctions = new IFunction<TSpace, TValue>[firstCount + secondCount - (first._functions[firstCount - 1].TryUnion(second._functions[0])?1:0)];
+            first._functions.CopyTo(newFunctions,0);
+            if (first._functions[firstCount - 1].TryUnion(second._functions[0]))
+            {
+                second._functions.CopyTo(newFunctions, firstCount - 1);
+                newFunctions[firstCount - 1] = first._functions[firstCount - 1].Union(second._functions[0]);
+            }else
+            {
+                second._functions.CopyTo(newFunctions, firstCount);
+            }
+            return new Composite<TSpace, TValue>(ref newFunctions);
         }
         /// <summary>
         /// Создаёт сложную функцию, состоящую из нескольких других, объединенных на непрерывном интервале.
@@ -70,6 +95,12 @@ namespace Functions.Implementations.Functions
             }
             Interval = new Interval<TSpace>(_functions[0].Interval.Start, _functions[lastRealIndex].Interval.End);
             Array.Resize(ref _functions, ++lastRealIndex);
+        }
+
+        private Composite(ref IFunction<TSpace, TValue>[] array)
+        {
+            _functions = array;
+            Interval = new Interval<TSpace>(array[0].Interval.Start, array[array.Length-1].Interval.End);
         }
 
         private static int InretvalBinarySearch(IFunction<TSpace, TValue>[] array, TSpace point)
