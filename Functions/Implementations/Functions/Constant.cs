@@ -16,6 +16,8 @@ namespace Functions.Implementations.Functions
         }
 
         public IInterval<TSpace> Interval { get; }
+        public bool IsDefinedOn(TSpace point) => Interval.Contains(point);
+
         public bool TryUnion(IFunction<TSpace, TValue> function)
         {
             if (!(function is Constant<TSpace, TValue>) || !Interval.TryUnion(function.Interval))

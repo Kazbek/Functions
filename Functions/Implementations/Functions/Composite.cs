@@ -17,10 +17,12 @@ namespace Functions.Implementations.Functions
         {
             if(!Interval.Contains(point))
                 throw new ArgumentOutOfRangeException();
-            return _functions[InretvalBinarySearch(_functions, point)].Value(point);
+            return _functions[Utils.Utils.InretvalBinarySearch(_functions, point)].Value(point);
         }
 
         public IInterval<TSpace> Interval { get; }
+        public bool IsDefinedOn(TSpace point) => Interval.Contains(point);
+
         public bool TryUnion(IFunction<TSpace, TValue> function)
         {
             return function is Composite<TSpace, TValue> && Interval.IsAdjacent(function.Interval);
@@ -62,9 +64,8 @@ namespace Functions.Implementations.Functions
         /// <param name="functions">Функции, из которых будет состоять создаваемая. Должны быть упорядочены по интервалам, не иметь разрывов между собой, а также не перечекаться.</param>
         public Composite(List<IFunction<TSpace, TValue>> functions)
         {
-            int functionsCount = functions.Count;
-            
-            if(functions == null || functionsCount == 0)
+            int functionsCount = functions?.Count ?? 0;
+            if (functionsCount == 0)
                 throw new Exception("Can not create from an empty list.");
 
             _functions = new IFunction<TSpace, TValue>[functionsCount];
@@ -103,41 +104,6 @@ namespace Functions.Implementations.Functions
             Interval = new Interval<TSpace>(array[0].Interval.Start, array[array.Length-1].Interval.End);
         }
 
-        private static int InretvalBinarySearch(IFunction<TSpace, TValue>[] array, TSpace point)
-        {
-            int low = 0; // 0 is always going to be the first element
-            int high = array.Length - 1; // Find highest element
-            int middle = (low + high + 1) / 2; // Find middle element
-            int location = -1; // Return value -1 if not found
-            
-            do
-            {
-                IFunction<TSpace, TValue> middleElement = array[middle];
-                
-                int compare = point.CompareTo(middleElement.Interval.Start.Position);
-                if (compare < 0 || compare == 0 && !middleElement.Interval.Start.Inclusive)
-                {
-                    high = middle - 1;
-                    middle = (low + high + 1) / 2;
-                    continue;
-                }
-
-                compare = point.CompareTo(middleElement.Interval.End.Position);
-                if (compare > 0 || compare == 0 && !middleElement.Interval.End.Inclusive)
-                {
-                    low = middle + 1;
-                    middle = (low + high + 1) / 2;
-                    continue;
-                }
-
-                if (middleElement.Interval.Contains(point))
-                {
-                    location = middle;
-                    break;
-                }
-            } while (low <= high);
-
-            return location;
-        }
+        
     }
 }

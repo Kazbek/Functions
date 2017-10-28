@@ -10,6 +10,7 @@ namespace Functions.Interfaces
         IIntervalEdge<TSpace> Start { get; }
         IIntervalEdge<TSpace> End { get; }
         bool Contains(TSpace point);
+        bool Intersect(IInterval<TSpace> interval);
         bool IsAdjacent(IInterval<TSpace> interval);
         bool IsAdjacentRight(IInterval<TSpace> interval);
         bool IsAdjacentLeft(IInterval<TSpace> interval);
