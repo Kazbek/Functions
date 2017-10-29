@@ -11,5 +11,6 @@ namespace Functions.Interfaces
         bool IsDefinedOn(TSpace point);
         bool TryUnion(IFunction<TSpace, TValue> function);
         IFunction<TSpace, TValue> Union(IFunction<TSpace, TValue> function);
+        IFunction<TSpace, TValue> ShortenIntervalTo(IInterval<TSpace> interval);
     }
 }

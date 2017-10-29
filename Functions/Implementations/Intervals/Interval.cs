@@ -16,8 +16,17 @@ namespace Functions.Implementations.Intervals
 
         public bool Intersect(IInterval<TSpace> interval)
         {
-            return Contains(interval.Start.Position) || Contains(interval.End.Position) || interval.Contains(Start.Position) || interval.Contains(End.Position);
+            return Start.CompareTo(interval.End) > 0 || End.CompareTo(interval.Start) < 0 ||
+                   Start.CompareTo(interval.End) == 0 && Start.Inclusive != interval.End.Inclusive ||
+                   End.CompareTo(interval.Start) == 0 && End.Inclusive != interval.Start.Inclusive;
         }
+
+        public bool Cover(IInterval<TSpace> interval)
+        {
+            return ( Start.CompareTo(interval.Start) < 0 || Start.CompareTo(interval.Start) == 0 && Start.Inclusive.CompareTo(interval.Start.Inclusive) >= 0 )
+                && ( End.CompareTo(interval.End) > 0 || End.CompareTo(interval.End) == 0 && End.Inclusive.CompareTo(interval.End.Inclusive) >= 0 );
+        }
+
         public bool IsAdjacent(IInterval<TSpace> interval) => End.Position.CompareTo(interval.Start.Position) == 0 && End.Inclusive ^ interval.Start.Inclusive
                                                           || Start.Position.CompareTo(interval.End.Position) == 0 && Start.Inclusive ^ interval.End.Inclusive;
 

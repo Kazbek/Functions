@@ -56,8 +56,55 @@ namespace Functions.Implementations.Functions
             {
                 second._functions.CopyTo(newFunctions, firstCount);
             }
-            return new Composite<TSpace, TValue>(ref newFunctions);
+            return new Composite<TSpace, TValue>(newFunctions);
         }
+
+        public IFunction<TSpace, TValue> ShortenIntervalTo(IInterval<TSpace> interval)
+        {
+            if (Interval.Equals(interval))
+                return this;
+            if (!Interval.Cover(interval))
+                throw new ArgumentOutOfRangeException(nameof(interval));
+            int firstIndex, lastIndex;
+            int count = _functions.Length;
+
+            if (_functions[0].Interval.Start.CompareTo(interval.Start) == 0)
+            {
+                firstIndex = 0;
+            }
+            else
+            {
+                firstIndex = Utils.Utils.InretvalBinarySearch(_functions, interval.Start.Position);
+                if (!interval.Start.Inclusive && _functions[firstIndex].Interval.End.CompareTo(interval.Start) == 0)
+                {
+                    firstIndex++;
+                    
+                }
+            }
+
+            if (_functions[count-1].Interval.End.CompareTo(interval.End) == 0)
+            {
+                lastIndex = count-1;
+            }
+            else
+            {
+                lastIndex = Utils.Utils.InretvalBinarySearch(_functions, interval.End.Position);
+                if (!interval.End.Inclusive && _functions[firstIndex].Interval.Start.CompareTo(interval.End) == 0)
+                {
+                    lastIndex--;
+                }
+            }
+            count = lastIndex - firstIndex + 1;
+            IFunction<TSpace, TValue>[] newFunctions = new IFunction<TSpace, TValue>[count];
+            newFunctions[0] = _functions[firstIndex].ShortenIntervalTo(new Interval<TSpace>(interval.Start,_functions[firstIndex].Interval.End));
+            if(count > 1)
+                newFunctions[count-1] = _functions[lastIndex].ShortenIntervalTo(new Interval<TSpace>(_functions[lastIndex].Interval.Start, interval.End));
+            if(count > 2)
+                Array.Copy(_functions, firstIndex, newFunctions, 1, count-2);
+
+            return new Composite<TSpace, TValue>(newFunctions);
+        }
+
         /// <summary>
         /// Создаёт сложную функцию, состоящую из нескольких других, объединенных на непрерывном интервале.
         /// </summary>
@@ -98,12 +145,10 @@ namespace Functions.Implementations.Functions
             Array.Resize(ref _functions, ++lastRealIndex);
         }
 
-        private Composite(ref IFunction<TSpace, TValue>[] array)
+        private Composite(IFunction<TSpace, TValue>[] array)
         {
             _functions = array;
             Interval = new Interval<TSpace>(array[0].Interval.Start, array[array.Length-1].Interval.End);
         }
-
-        
     }
 }
