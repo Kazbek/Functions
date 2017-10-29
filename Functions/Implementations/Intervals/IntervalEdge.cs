@@ -19,5 +19,14 @@ namespace Functions.Implementations.Intervals
         }
 
         public int CompareTo(IIntervalEdge<TSpace> other) => Position.CompareTo(other.Position);
+        public bool Equals(IIntervalEdge<TSpace> other) => Position.CompareTo(other.Position) == 0 && Inclusive == other.Inclusive;
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return (EqualityComparer<TSpace>.Default.GetHashCode(Position) * 397) ^ Inclusive.GetHashCode();
+            }
+        }
     }
 }

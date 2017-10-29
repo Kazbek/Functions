@@ -22,6 +22,7 @@ namespace Functions.Implementations.Aggregations
         public bool IsDefinedOn(TSpace point) => Utils.Utils.InretvalBinarySearch(_functions, point) != -1;
 
         public IFunction<TSpace, TValue> this[int index] => _functions[index]; //readonly
+        public int IntervalsCount => _functions.Length;
 
         public Piecewise(List<IFunction<TSpace, TValue>> functions)
         {

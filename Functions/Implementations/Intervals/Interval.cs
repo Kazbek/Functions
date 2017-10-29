@@ -62,5 +62,7 @@ namespace Functions.Implementations.Intervals
             Start = start;
             End = end;
         }
+
+        public bool Equals(IInterval<TSpace> other) => Start.Equals(other.Start) && End.Equals(other.End);
     }
 }

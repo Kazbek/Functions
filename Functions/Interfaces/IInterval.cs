@@ -5,7 +5,7 @@ using Functions.Implementations.Intervals;
 
 namespace Functions.Interfaces
 {
-    public interface IInterval<TSpace> where TSpace : IComparable<TSpace>
+    public interface IInterval<TSpace> : IEquatable<IInterval<TSpace>> where TSpace : IComparable<TSpace>
     {
         IIntervalEdge<TSpace> Start { get; }
         IIntervalEdge<TSpace> End { get; }
