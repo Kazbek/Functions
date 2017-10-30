@@ -32,7 +32,7 @@ namespace Functions.Implementations.Aggregations
             if(piecewise.IntervalsCount == 0)
                 return new Piecewise<TSpace, TValue>((IFunction<TSpace, TValue>[])piecewise._functions.Clone());
 
-            IFunction<TSpace, TValue>[] first, second, result;
+            IFunction<TSpace, TValue>[] first, second;
 
             if (_functions[0].Interval.Start.CompareTo(piecewise[0].Interval.Start) > 0)
             {
@@ -82,19 +82,46 @@ namespace Functions.Implementations.Aggregations
                     newFunctions[++lastFunctionIndex] = lastFunction;
                     continue;
                 }
-                if (tuple.isFirstArrayElement)
+                if (tuple.isFirstArrayElement && !lastFunction.Interval.Cover(tuple.function.Interval))
                 {
-                    if(lastFunction.Interval.Cover(tuple.function.Interval))
-                        continue;
+                    lastFunction = tuple.function.ShortenIntervalTo(
+                        new Interval<TSpace>(lastFunction.Interval.End.Position, !lastFunction.Interval.End.Inclusive,
+                            tuple.function.Interval.End.Position, tuple.function.Interval.End.Inclusive));
+                    newFunctions[++lastFunctionIndex] = lastFunction;
+                    continue;
                 }
-                else
+                if (!tuple.isFirstArrayElement && tuple.function.Interval.Cover(lastFunction.Interval))
                 {
-                    
+                    lastFunction = tuple.function;
+                    newFunctions[lastFunctionIndex] = lastFunction;
+                    continue;
+                }
+                if (!tuple.isFirstArrayElement && lastFunction.Interval.Cover(tuple.function.Interval) && !(lastFunction.Interval.End.Position.CompareTo(tuple.function.Interval.End.Position) == 0 && lastFunction.Interval.End.Inclusive == tuple.function.Interval.End.Inclusive))
+                {
+                    //when we make 3 intervals
+                    newFunctions[lastFunctionIndex] = lastFunction.ShortenIntervalTo(
+                        new Interval<TSpace>(lastFunction.Interval.Start.Position, lastFunction.Interval.Start.Inclusive,
+                        tuple.function.Interval.Start.Position, !tuple.function.Interval.Start.Inclusive));
+
+                    newFunctions[++lastFunctionIndex] = tuple.function;
+
+                    lastFunction = lastFunction.ShortenIntervalTo(new Interval<TSpace>(
+                        tuple.function.Interval.Start.Position, !tuple.function.Interval.Start.Inclusive,
+                        lastFunction.Interval.End.Position, lastFunction.Interval.End.Inclusive));
+                    newFunctions[++lastFunctionIndex] = lastFunction;
+                }
+                if (!tuple.isFirstArrayElement && ( lastFunction.Interval.Intersect(tuple.function.Interval) || lastFunction.Interval.End.Position.CompareTo(tuple.function.Interval.End.Position) == 0 && lastFunction.Interval.End.Inclusive == tuple.function.Interval.End.Inclusive))
+                {
+                    newFunctions[lastFunctionIndex] = lastFunction.ShortenIntervalTo(
+                        new Interval<TSpace>(lastFunction.Interval.Start.Position, lastFunction.Interval.Start.Inclusive,
+                        tuple.function.Interval.Start.Position, !tuple.function.Interval.Start.Inclusive));
+                    lastFunction = tuple.function;
+                    newFunctions[++lastFunctionIndex] = lastFunction;
                 }
             }
-
-            //Array.Resize(ref newFunctions, 0);
-            return null;
+            if(++lastFunctionIndex != cycles*2-1)
+                Array.Resize(ref newFunctions, lastFunctionIndex);
+            return new Piecewise<TSpace, TValue>(newFunctions);
         }
 
         private Piecewise(IFunction<TSpace, TValue>[] functions)

@@ -35,6 +35,15 @@ namespace Functions.Implementations.Functions
             throw new Exception("It is not possible to combine these functions.");
         }
 
+        public IFunction<TSpace, TValue> ShortenIntervalTo(IInterval<TSpace> interval)
+        {
+            if (Interval.Equals(interval))
+                return this;
+            if (Interval.Cover(interval))
+                return new Constant<TSpace, TValue>(interval, _value);
+            throw new ArgumentOutOfRangeException(nameof(interval));
+        }
+
         public Constant(IInterval<TSpace> interval, TValue value)
         {
             Interval = interval;
