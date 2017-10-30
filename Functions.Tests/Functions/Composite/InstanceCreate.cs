@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Functions.Implementations.Functions;
 using Functions.Implementations.Intervals;
 using Functions.Interfaces;
