@@ -18,12 +18,16 @@ namespace Functions.Implementations.Functions
 
         public bool TryUnion(IFunction<TSpace, TValue> function)
         {
-            if (!(_func is IEquatable<Func<TSpace, TValue>>) || !Interval.TryUnion(function.Interval))
+            if (!(function is Custom<TSpace, TValue>) || !Interval.TryUnion(function.Interval))
                 return false;
-            IEquatable<Func<TSpace, TValue>> compare = _func as IEquatable<Func<TSpace, TValue>>;
-            return compare.Equals(((Custom<TSpace, TValue>)function)._func as IEquatable<Func<TSpace, TValue>>);
+            Custom<TSpace, TValue> compare = (Custom<TSpace, TValue>) function;
+            return _func.Equals(compare._func);
         }
-
+        /// <summary>
+        /// Unite functions. Function object must be used from precompiled expression. If you use expression directly in constructor then equality method return false.
+        /// </summary>
+        /// <param name="function">Function for calculating TValue by a given TSpace</param>
+        /// <returns></returns>
         public IFunction<TSpace, TValue> Union(IFunction<TSpace, TValue> function)
         {
             if (TryUnion(function))
