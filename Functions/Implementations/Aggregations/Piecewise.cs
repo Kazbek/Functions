@@ -36,13 +36,13 @@ namespace Functions.Implementations.Aggregations
 
             if (_functions[0].Interval.Start.CompareTo(piecewise[0].Interval.Start) > 0)
             {
-                first = _functions;
-                second = piecewise._functions;
+                first = piecewise._functions;
+                second = _functions;
             }
             else
             {
-                first = piecewise._functions;
-                second = _functions;
+                first = _functions;
+                second = piecewise._functions;
             }
             int firstCount = first.Length;
             int secondCount = second.Length;
@@ -50,7 +50,7 @@ namespace Functions.Implementations.Aggregations
             IFunction<TSpace, TValue>[] newFunctions;
 
             int compare = first[firstCount - 1].Interval.End.CompareTo(second[0].Interval.Start);
-            if ( compare > 0 || compare == 0 && first[firstCount - 1].Interval.End.Inclusive != second[0].Interval.Start.Inclusive)
+            if ( compare < 0 || compare == 0 && first[firstCount - 1].Interval.End.Inclusive != second[0].Interval.Start.Inclusive)
             {
                 newFunctions = new IFunction<TSpace, TValue>[firstCount + secondCount - (first[firstCount - 1].TryUnion(second[0]) ? 1 : 0)];
                 first.CopyTo(newFunctions, 0);
@@ -66,7 +66,7 @@ namespace Functions.Implementations.Aggregations
                 return new Piecewise<TSpace, TValue>(newFunctions);
             }
             int cycles = firstCount + secondCount;
-            newFunctions = new IFunction<TSpace, TValue>[cycles * 2 - 1]; //trust me, I`m an engineer; example 1 + n, where second divide first, n -> inf make n*2-1 and its max.
+            newFunctions = new IFunction<TSpace, TValue>[cycles * 2 - 1]; //trust me, I`m an engineer; example 1 + n where second divide first, n -> inf make n*2-1 and its max.
 
             OrderedAccessToArrays<TSpace, TValue> arrays = new OrderedAccessToArrays<TSpace, TValue>(_functions, piecewise._functions); //This is important from which in which
             IFunction<TSpace, TValue> lastFunction = arrays.GetNext().Function;
@@ -106,9 +106,10 @@ namespace Functions.Implementations.Aggregations
                     newFunctions[++lastFunctionIndex] = tuple.function;
 
                     lastFunction = lastFunction.ShortenIntervalTo(new Interval<TSpace>(
-                        tuple.function.Interval.Start.Position, !tuple.function.Interval.Start.Inclusive,
+                        tuple.function.Interval.End.Position, !tuple.function.Interval.End.Inclusive,
                         lastFunction.Interval.End.Position, lastFunction.Interval.End.Inclusive));
                     newFunctions[++lastFunctionIndex] = lastFunction;
+                    continue;
                 }
                 if (!tuple.isFirstArrayElement && ( lastFunction.Interval.Intersect(tuple.function.Interval) || lastFunction.Interval.End.Position.CompareTo(tuple.function.Interval.End.Position) == 0 && lastFunction.Interval.End.Inclusive == tuple.function.Interval.End.Inclusive))
                 {
@@ -119,8 +120,8 @@ namespace Functions.Implementations.Aggregations
                     newFunctions[++lastFunctionIndex] = lastFunction;
                 }
             }
-            if(++lastFunctionIndex != cycles*2-1)
-                Array.Resize(ref newFunctions, lastFunctionIndex);
+
+            Array.Resize(ref newFunctions, ++lastFunctionIndex);
             return new Piecewise<TSpace, TValue>(newFunctions);
         }
 

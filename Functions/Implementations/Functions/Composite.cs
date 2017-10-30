@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Functions.Implementations.Comparators;
 using Functions.Implementations.Intervals;
 using Functions.Interfaces;
 
@@ -108,13 +109,12 @@ namespace Functions.Implementations.Functions
         /// <summary>
         /// Создаёт сложную функцию, состоящую из нескольких других, объединенных на непрерывном интервале.
         /// </summary>
-        /// <param name="functions">Функции, из которых будет состоять создаваемая. Должны быть упорядочены по интервалам, не иметь разрывов между собой, а также не перечекаться.</param>
         public Composite(List<IFunction<TSpace, TValue>> functions)
         {
             int functionsCount = functions?.Count ?? 0;
             if (functionsCount == 0)
                 throw new Exception("Can not create from an empty list.");
-
+            functions.Sort(new FunctionIntervalComparer<TSpace, TValue>());
             _functions = new IFunction<TSpace, TValue>[functionsCount];
             
             IFunction<TSpace, TValue> function = functions[0];

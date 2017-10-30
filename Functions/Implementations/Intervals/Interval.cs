@@ -16,9 +16,9 @@ namespace Functions.Implementations.Intervals
 
         public bool Intersect(IInterval<TSpace> interval)
         {
-            return Start.CompareTo(interval.End) > 0 || End.CompareTo(interval.Start) < 0 ||
+            return !(Start.CompareTo(interval.End) > 0 || End.CompareTo(interval.Start) < 0 ||
                    Start.CompareTo(interval.End) == 0 && Start.Inclusive != interval.End.Inclusive ||
-                   End.CompareTo(interval.Start) == 0 && End.Inclusive != interval.Start.Inclusive;
+                   End.CompareTo(interval.Start) == 0 && End.Inclusive != interval.Start.Inclusive);
         }
 
         public bool Cover(IInterval<TSpace> interval)
@@ -71,7 +71,5 @@ namespace Functions.Implementations.Intervals
             Start = start;
             End = end;
         }
-
-        public bool Equals(IInterval<TSpace> other) => Start.Equals(other.Start) && End.Equals(other.End);
     }
 }
