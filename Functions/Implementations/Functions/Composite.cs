@@ -29,15 +29,31 @@ namespace Functions.Implementations.Functions
             return function is Composite<TSpace, TValue> && Interval.IsAdjacent(function.Interval);
         }
 
+        public bool TryUnion(IFunction<TSpace, TValue> function, out IFunction<TSpace, TValue> resultFunction)
+        {
+            if (!TryUnion(function))
+            {
+                resultFunction = null;
+                return false;
+            }
+            resultFunction = UncheckedUnion(function);
+            return true;
+        }
+
         public IFunction<TSpace, TValue> Union(IFunction<TSpace, TValue> function)
         {
             if(!TryUnion(function))
                 throw new Exception("It is not possible to combine these functions.");
+            return UncheckedUnion(function);
+        }
+
+        private IFunction<TSpace, TValue> UncheckedUnion(IFunction<TSpace, TValue> function)
+        {
             Composite<TSpace, TValue> composite = function as Composite<TSpace, TValue>;
             Composite<TSpace, TValue> first, second;
             if (Interval.Start.CompareTo(function.Interval.Start) > 0)
             {
-                first = (Composite<TSpace, TValue>) function;
+                first = (Composite<TSpace, TValue>)function;
                 second = this;
             }
             else
@@ -47,13 +63,14 @@ namespace Functions.Implementations.Functions
             }
             int firstCount = first._functions.Length;
             int secondCount = second._functions.Length;
-            IFunction<TSpace, TValue>[] newFunctions = new IFunction<TSpace, TValue>[firstCount + secondCount - (first._functions[firstCount - 1].TryUnion(second._functions[0])?1:0)];
-            first._functions.CopyTo(newFunctions,0);
+            IFunction<TSpace, TValue>[] newFunctions = new IFunction<TSpace, TValue>[firstCount + secondCount - (first._functions[firstCount - 1].TryUnion(second._functions[0]) ? 1 : 0)];
+            first._functions.CopyTo(newFunctions, 0);
             if (first._functions[firstCount - 1].TryUnion(second._functions[0]))
             {
                 second._functions.CopyTo(newFunctions, firstCount - 1);
                 newFunctions[firstCount - 1] = first._functions[firstCount - 1].Union(second._functions[0]);
-            }else
+            }
+            else
             {
                 second._functions.CopyTo(newFunctions, firstCount);
             }
@@ -130,9 +147,9 @@ namespace Functions.Implementations.Functions
                 if (!prevInterval.IsAdjacentRight(function.Interval))
                     throw new Exception("Intervals do not go one by one.");
                 prevInterval = function.Interval;
-                if (lastAddedFunction.TryUnion(function))
+                if (lastAddedFunction.TryUnion(function, out var unitedFunction))
                 {
-                    lastAddedFunction = lastAddedFunction.Union(function);
+                    lastAddedFunction = unitedFunction;
                 }
                 else
                 {

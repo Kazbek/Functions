@@ -53,10 +53,10 @@ namespace Functions.Implementations.Aggregations
             {
                 newFunctions = new IFunction<TSpace, TValue>[firstCount + secondCount - (first[firstCount - 1].TryUnion(second[0]) ? 1 : 0)];
                 first.CopyTo(newFunctions, 0);
-                if (first[firstCount - 1].TryUnion(second[0]))
+                if (first[firstCount - 1].TryUnion(second[0], out var unitedFunction))
                 {
                     second.CopyTo(newFunctions, firstCount - 1);
-                    newFunctions[firstCount - 1] = first[firstCount - 1].Union(second[0]);
+                    newFunctions[firstCount - 1] = unitedFunction;
                 }
                 else
                 {
@@ -155,9 +155,9 @@ namespace Functions.Implementations.Aggregations
                 if (prevInterval.Intersect(function.Interval) && !lastAddedFunction.TryUnion(function))
                     throw new Exception("Not combinable functions have intersected intervals.");
                 prevInterval = function.Interval;
-                if (lastAddedFunction.TryUnion(function))
+                if (lastAddedFunction.TryUnion(function, out var unitedFunction))
                 {
-                    lastAddedFunction = lastAddedFunction.Union(function);
+                    lastAddedFunction = unitedFunction;
                 }
                 else
                 {

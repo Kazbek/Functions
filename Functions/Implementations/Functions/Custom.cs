@@ -23,6 +23,18 @@ namespace Functions.Implementations.Functions
             Custom<TSpace, TValue> compare = (Custom<TSpace, TValue>) function;
             return _func.Equals(compare._func);
         }
+
+        public bool TryUnion(IFunction<TSpace, TValue> function, out IFunction<TSpace, TValue> resultFunction)
+        {
+            if (!TryUnion(function))
+            {
+                resultFunction = null;
+                return false;
+            }
+            resultFunction = UncheckedUnion(function);
+            return true;
+        }
+
         /// <summary>
         /// Unite functions. Function object must be used from precompiled expression. If you use expression directly in constructor then equality method return false.
         /// </summary>
@@ -31,8 +43,13 @@ namespace Functions.Implementations.Functions
         public IFunction<TSpace, TValue> Union(IFunction<TSpace, TValue> function)
         {
             if (TryUnion(function))
-                return new Custom<TSpace, TValue>(Interval.Union(function.Interval), _func);
+                return UncheckedUnion(function);
             throw new Exception("It is not possible to combine these functions.");
+        }
+
+        private IFunction<TSpace, TValue> UncheckedUnion(IFunction<TSpace, TValue> function)
+        {
+            return new Custom<TSpace, TValue>(Interval.Union(function.Interval), _func);
         }
 
         public IFunction<TSpace, TValue> ShortenIntervalTo(IInterval<TSpace> interval)
