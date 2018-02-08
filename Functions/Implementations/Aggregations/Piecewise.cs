@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Functions.Implementations.Aggregations.Builders;
 using Functions.Implementations.Comparators;
 using Functions.Implementations.Intervals;
 using Functions.Implementations.Utils;
@@ -127,6 +129,11 @@ namespace Functions.Implementations.Aggregations
         private Piecewise(IFunction<TSpace, TValue>[] functions)
         {
             _functions = functions;
+        }
+
+        public Piecewise(PiecewiseBuilder<TSpace, TValue> piecewiseBuilder)
+        {
+            _functions = piecewiseBuilder.GetFunctions().ToArray();
         }
 
         public Piecewise(List<IFunction<TSpace, TValue>> functions)

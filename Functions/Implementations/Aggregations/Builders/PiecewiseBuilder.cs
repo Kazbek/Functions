@@ -12,8 +12,10 @@ namespace Functions.Implementations.Aggregations.Builders
 
         public Piecewise<TSpace, TValue> ToPiecewise()
         {
-            return new Piecewise<TSpace, TValue>(_functions.ToList());
+            return new Piecewise<TSpace, TValue>(this);
         }
+
+        internal IEnumerable<IFunction<TSpace, TValue>> GetFunctions() => _functions;
 
         public void Append(IFunction<TSpace, TValue> function)
         {
