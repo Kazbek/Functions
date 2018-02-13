@@ -76,48 +76,48 @@ namespace Functions.Implementations.Aggregations
             
             for (int i = 1; i < cycles; i++)
             {
-                (bool isFirstArrayElement, IFunction<TSpace, TValue> function) tuple = arrays.GetNext(); //If this and the previous begin with one point, then the interval of this will not be shorter than the previous one
-                if (!lastFunction.Interval.Intersect(tuple.function.Interval))
+                OrderedAccessElement<TSpace, TValue> orderedAccessElement = arrays.GetNext(); //If this and the previous begin with one point, then the interval of this will not be shorter than the previous one
+                if (!lastFunction.Interval.Intersect(orderedAccessElement.Function.Interval))
                 {
-                    lastFunction = tuple.function;
+                    lastFunction = orderedAccessElement.Function;
                     newFunctions[++lastFunctionIndex] = lastFunction;
                     continue;
                 }
-                if (tuple.isFirstArrayElement && !lastFunction.Interval.Cover(tuple.function.Interval))
+                if (orderedAccessElement.IsFirstArrayElement && !lastFunction.Interval.Cover(orderedAccessElement.Function.Interval))
                 {
-                    lastFunction = tuple.function.ShortenIntervalTo(
+                    lastFunction = orderedAccessElement.Function.ShortenIntervalTo(
                         new Interval<TSpace>(lastFunction.Interval.End.Position, !lastFunction.Interval.End.Inclusive,
-                            tuple.function.Interval.End.Position, tuple.function.Interval.End.Inclusive));
+                            orderedAccessElement.Function.Interval.End.Position, orderedAccessElement.Function.Interval.End.Inclusive));
                     newFunctions[++lastFunctionIndex] = lastFunction;
                     continue;
                 }
-                if (!tuple.isFirstArrayElement && tuple.function.Interval.Cover(lastFunction.Interval))
+                if (!orderedAccessElement.IsFirstArrayElement && orderedAccessElement.Function.Interval.Cover(lastFunction.Interval))
                 {
-                    lastFunction = tuple.function;
+                    lastFunction = orderedAccessElement.Function;
                     newFunctions[lastFunctionIndex] = lastFunction;
                     continue;
                 }
-                if (!tuple.isFirstArrayElement && lastFunction.Interval.Cover(tuple.function.Interval) && !(lastFunction.Interval.End.Position.CompareTo(tuple.function.Interval.End.Position) == 0 && lastFunction.Interval.End.Inclusive == tuple.function.Interval.End.Inclusive))
+                if (!orderedAccessElement.IsFirstArrayElement && lastFunction.Interval.Cover(orderedAccessElement.Function.Interval) && !(lastFunction.Interval.End.Position.CompareTo(orderedAccessElement.Function.Interval.End.Position) == 0 && lastFunction.Interval.End.Inclusive == orderedAccessElement.Function.Interval.End.Inclusive))
                 {
                     //when we make 3 intervals
                     newFunctions[lastFunctionIndex] = lastFunction.ShortenIntervalTo(
                         new Interval<TSpace>(lastFunction.Interval.Start.Position, lastFunction.Interval.Start.Inclusive,
-                        tuple.function.Interval.Start.Position, !tuple.function.Interval.Start.Inclusive));
+                        orderedAccessElement.Function.Interval.Start.Position, !orderedAccessElement.Function.Interval.Start.Inclusive));
 
-                    newFunctions[++lastFunctionIndex] = tuple.function;
+                    newFunctions[++lastFunctionIndex] = orderedAccessElement.Function;
 
                     lastFunction = lastFunction.ShortenIntervalTo(new Interval<TSpace>(
-                        tuple.function.Interval.End.Position, !tuple.function.Interval.End.Inclusive,
+                        orderedAccessElement.Function.Interval.End.Position, !orderedAccessElement.Function.Interval.End.Inclusive,
                         lastFunction.Interval.End.Position, lastFunction.Interval.End.Inclusive));
                     newFunctions[++lastFunctionIndex] = lastFunction;
                     continue;
                 }
-                if (!tuple.isFirstArrayElement && ( lastFunction.Interval.Intersect(tuple.function.Interval) || lastFunction.Interval.End.Position.CompareTo(tuple.function.Interval.End.Position) == 0 && lastFunction.Interval.End.Inclusive == tuple.function.Interval.End.Inclusive))
+                if (!orderedAccessElement.IsFirstArrayElement && ( lastFunction.Interval.Intersect(orderedAccessElement.Function.Interval) || lastFunction.Interval.End.Position.CompareTo(orderedAccessElement.Function.Interval.End.Position) == 0 && lastFunction.Interval.End.Inclusive == orderedAccessElement.Function.Interval.End.Inclusive))
                 {
                     newFunctions[lastFunctionIndex] = lastFunction.ShortenIntervalTo(
                         new Interval<TSpace>(lastFunction.Interval.Start.Position, lastFunction.Interval.Start.Inclusive,
-                        tuple.function.Interval.Start.Position, !tuple.function.Interval.Start.Inclusive));
-                    lastFunction = tuple.function;
+                        orderedAccessElement.Function.Interval.Start.Position, !orderedAccessElement.Function.Interval.Start.Inclusive));
+                    lastFunction = orderedAccessElement.Function;
                     newFunctions[++lastFunctionIndex] = lastFunction;
                 }
             }
