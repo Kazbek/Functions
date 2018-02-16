@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Functions.Implementations.Comparators;
 using Functions.Interfaces;
 
 namespace Functions.Implementations.Aggregations.Builders
@@ -19,7 +18,7 @@ namespace Functions.Implementations.Aggregations.Builders
 
         public void Append(IFunction<TSpace, TValue> function)
         {
-            if(function == null)
+            if (function == null)
                 throw new ArgumentNullException(nameof(function));
             if (_functions.Count == 0)
             {
@@ -27,7 +26,7 @@ namespace Functions.Implementations.Aggregations.Builders
                 return;
             }
             int compare = _functions.Last.Value.Interval.End.CompareTo(function.Interval.Start);
-            if (compare > 0 || compare == 0 && _functions.Last.Value.Interval.End.Inclusive != function.Interval.Start.Inclusive)
+            if (compare > 0 || compare == 0 && !(_functions.Last.Value.Interval.End.Inclusive && function.Interval.Start.Inclusive))
             {
                 _functions.AddLast(function);
                 return;
@@ -47,7 +46,7 @@ namespace Functions.Implementations.Aggregations.Builders
                 return;
             }
             int compare = _functions.First.Value.Interval.Start.CompareTo(function.Interval.End);
-            if (compare > 0 || compare == 0 && _functions.Last.Value.Interval.Start.Inclusive != function.Interval.End.Inclusive)
+            if (compare > 0 || compare == 0 && !(_functions.Last.Value.Interval.Start.Inclusive && function.Interval.End.Inclusive))
             {
                 _functions.AddFirst(function);
                 return;
@@ -60,8 +59,8 @@ namespace Functions.Implementations.Aggregations.Builders
             _functions = new LinkedList<IFunction<TSpace, TValue>>();
             if (functions == null || functions.Count == 0)
                 return;
-            
-            functions.Sort(new Comparators.FunctionIntervalComparer<TSpace, TValue>());
+
+            functions.Sort(new FunctionIntervalComparer<TSpace, TValue>());
             int count = functions.Count;
             _functions.AddFirst(functions[0]);
             for (int i = 1; i < count; i++)
