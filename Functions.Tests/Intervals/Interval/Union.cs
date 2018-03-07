@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Functions.Implementations.Intervals;
+﻿using Functions.Implementations.Intervals;
 using Functions.Interfaces;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
