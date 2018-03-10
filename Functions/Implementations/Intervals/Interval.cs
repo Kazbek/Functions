@@ -57,17 +57,15 @@ namespace Functions.Implementations.Intervals
 
         public Interval(TSpace start, bool inclusiveStart, TSpace end, bool inclusiveEnd)
         {
-            if(start == null || end == null || start.CompareTo(end) > 0 
-                || start.CompareTo(end) == 0 && (!inclusiveStart || !inclusiveEnd))
-                throw new Exception("Invalid arguments. They can`t be null and end must be not less than start.");
+            if (start.CompareTo(end) > 0 || start.CompareTo(end) == 0 && (!inclusiveStart || !inclusiveEnd))
+                throw new ArgumentException("Invalid arguments. End must be not less than start.");
             Start = new IntervalEdge<TSpace>(start, inclusiveStart);
             End = new IntervalEdge<TSpace>(end, inclusiveEnd);
         }
         public Interval(IIntervalEdge<TSpace> start, IIntervalEdge<TSpace> end)
         {
-            if (start.CompareTo(end) > 0 
-                || start.CompareTo(end) == 0 && (!start.Inclusive || !end.Inclusive))
-                throw new Exception("End must be not less than start.");
+            if (start.CompareTo(end) > 0 || start.CompareTo(end) == 0 && (!start.Inclusive || !end.Inclusive))
+                throw new ArgumentException("Invalid arguments. End must be not less than start.");
             Start = start;
             End = end;
         }

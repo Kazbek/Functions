@@ -24,11 +24,26 @@ namespace Functions.Tests.InrervalEdges.IntervalEdge
         }
 
         [TestMethod]
-        public void IntForce()
+        public void ExceptionArgumentNull()
         {
-            IntervalEdge<int> edge = new IntervalEdge<int>(3, true);
-            Assert.AreEqual(edge.Position, 3);
-            Assert.AreEqual(edge.Inclusive, true);
+            NullableInt nullPointer = null;
+            Assert.ThrowsException<ArgumentNullException>(() => new IntervalEdge<NullableInt>(nullPointer, false));
+            Assert.ThrowsException<ArgumentNullException>(() => new IntervalEdge<NullableInt>(nullPointer, true));
+        }
+
+        private class NullableInt : IComparable<NullableInt>
+        {
+            private int? _point;
+
+            public NullableInt(int? point)
+            {
+                _point = point;
+            }
+
+            public int CompareTo(NullableInt other)
+            {
+                throw new NotImplementedException();
+            }
         }
 
     }

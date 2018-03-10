@@ -11,7 +11,7 @@ namespace Functions.Implementations.Intervals
         public IntervalEdge(TSpace position, bool inclusive)
         {
             if(position == null)
-                throw new Exception("Position can`t be null.");
+                throw new ArgumentNullException(nameof(position), "Position can`t be null.");
             Position = position;
             Inclusive = inclusive;
         }

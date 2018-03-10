@@ -36,5 +36,19 @@ namespace Functions.Tests.Intervals.Interval
             Assert.AreEqual(interval.End.Position, position2);
             Assert.AreEqual(interval.End.Inclusive, inclusive2);
         }
+
+        [TestMethod]
+        [DataRow(1, false, 0, true)]
+        [DataRow(1, false, 1, true)]
+        [DataRow(1, true, 1, false)]
+        [DataRow(1, false, 1, false)]
+        [DataRow(17, true, 15, true)]
+        public void ExceptionStartBiggerThanEnd(int startPosition, bool startInclusive, int endPosition, bool endInclusive)
+        {
+            Assert.ThrowsException<ArgumentException>(() => new Interval<int>(startPosition, startInclusive, endPosition, endInclusive));
+            IIntervalEdge<int> start = new IntervalEdge<int>(startPosition, startInclusive);
+            IIntervalEdge<int> end = new IntervalEdge<int>(endPosition, endInclusive);
+            Assert.ThrowsException<ArgumentException>(() => new Interval<int>(start, end));
+        }
     }
 }
