@@ -3,7 +3,7 @@ using Functions.Interfaces;
 
 namespace Functions.Implementations.Metrics
 {
-    public class DateTimeToMonth : IMetric<DateTime, int>
+    public class DateTimeToMonth : IIntervalMetric<DateTime, int>
     {
         public int GetMetric(DateTime point1, DateTime point2)
         {
@@ -15,5 +15,7 @@ namespace Functions.Implementations.Metrics
             }
             return (point2.Year - point1.Year) * 12 + (point2.Month - point1.Month);
         }
+
+        public int GetMetric(IInterval<DateTime> interval) => (interval.End.Position.Year - interval.Start.Position.Year) * 12 + (interval.End.Position.Month - interval.Start.Position.Month);
     }
 }
