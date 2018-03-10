@@ -68,5 +68,7 @@ namespace Functions.Implementations.Functions
             _func = func;
             Interval = inteval;
         }
+
+        private Custom() { }
     }
 }

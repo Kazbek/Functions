@@ -62,5 +62,7 @@ namespace Functions.Implementations.Functions
             Interval = interval;
             _value = value;
         }
+
+        private Constant() { }
     }
 }

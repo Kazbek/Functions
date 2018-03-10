@@ -175,5 +175,7 @@ namespace Functions.Implementations.Aggregations
             }
             Array.Resize(ref _functions, ++lastRealIndex);
         }
+
+        private Piecewise() { }
     }
 }

@@ -3,7 +3,7 @@ using Functions.Interfaces;
 
 namespace Functions.Implementations.Intervals
 {
-    public struct Interval<TSpace> : IInterval<TSpace> where TSpace : IComparable<TSpace>
+    public class Interval<TSpace> : IInterval<TSpace> where TSpace : IComparable<TSpace>
     {
         public IIntervalEdge<TSpace> Start { get; }
         public IIntervalEdge<TSpace> End { get; }
@@ -69,5 +69,6 @@ namespace Functions.Implementations.Intervals
             Start = start;
             End = end;
         }
+        private Interval(){}
     }
 }

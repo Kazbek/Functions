@@ -16,6 +16,8 @@ namespace Functions.Implementations.Intervals
             Inclusive = inclusive;
         }
 
+        private IntervalEdge() { }
+
         public int CompareTo(IIntervalEdge<TSpace> other) => Position.CompareTo(other.Position);
     }
 }

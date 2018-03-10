@@ -167,5 +167,7 @@ namespace Functions.Implementations.Functions
             _functions = array;
             Interval = new Interval<TSpace>(array[0].Interval.Start, array[array.Length-1].Interval.End);
         }
+
+        private Composite() { }
     }
 }
